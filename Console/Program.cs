@@ -43,6 +43,12 @@ namespace ConsoleInterface
                 case "delete":
                     Delete(arguments);
                     break;
+                case "take":
+                    Take(arguments);
+                    break;
+                case "return":
+                    Return(arguments);
+                    break;
                 default:
                     Console.WriteLine($"Unknown command");
                     break;
@@ -139,6 +145,18 @@ namespace ConsoleInterface
                     foreach (var a in DataAccess.GetAllAuthors())
                         Console.WriteLine($"{a.ID_Author} {a.Surname} {a.Name}");
                     break;
+                case "mybooks":
+                    foreach (var m in DataAccess.GetMyBooks())
+                        Console.WriteLine($"{m.ID_Book} {m.Name} " +
+                            $"{DataAccess.connection.Query<Author>(@$"select Surname, Name 
+                                                                    from Author   
+                                                                    where ID_Author = {m.ID_Author}").FirstOrDefault().Surname} " +
+                            $"{DataAccess.connection.Query<Department>(@$"select Name 
+                                                                    from Department   
+                                                                    where ID_Department = {m.ID_Department}").FirstOrDefault().Name} " +
+                            $"{m.Quantity}"
+                                 );
+                    break;
                 default:
                     Console.WriteLine($"Unknown command");
                     break;
@@ -169,6 +187,31 @@ namespace ConsoleInterface
                         ID_Department = Convert.ToInt32(args[6]),
                         Quantity = Convert.ToInt32(args[7])
                     });
+                    break;
+                default:
+                    Console.WriteLine("Unknown command");
+                    break;
+            }
+        }
+        private static void Take(string[] args)
+        {
+            switch (args[1])
+            {
+                case "book":
+                    DataAccess.TakeBook(int.Parse(args[2]));
+                    break;
+                default:
+                    Console.WriteLine("Unknown command");
+                    break;
+            }
+        }
+
+        private static void Return(string[] args)
+        {
+            switch (args[1])
+            {
+                case "book":
+                    DataAccess.ReturnBook(int.Parse(args[2]));
                     break;
                 default:
                     Console.WriteLine("Unknown command");
